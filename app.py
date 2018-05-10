@@ -13,6 +13,10 @@ app = Flask(__name__)
 app.secret_key = 'zidane'
 api = Api(app)
 
+# When debug = Flase in the flask application, and We make a call to a jwt
+# protected endpoint without an access token the process will terminate with
+# 500 Internal Server Error without this config
+app.config['PROPAGATE_EXCEPTIONS'] = True
 # change the default url to the authentication endpoint
 app.config['JWT_AUTH_URL_RULE'] = '/login'
 # config JWT to expire within half an hour

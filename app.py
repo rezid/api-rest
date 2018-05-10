@@ -17,10 +17,11 @@ api = Api(app)
 app.config['JWT_AUTH_URL_RULE'] = '/login'
 # config JWT to expire within half an hour
 app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
-# desactivate FLASK SQLALCHEMY track modification  
+# desactivate FLASK SQLALCHEMY track modification
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # select the db used
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',
+                                                       'sqlite:///data.db')
 
 jwt = JWT(app, authenticate, identity)
 
@@ -31,6 +32,6 @@ api.add_resource(UserRegister, '/register')
 api.add_resource(StoreList, '/stores')
 
 if __name__ == '__main__':
-  from db import db
-  db.init_app(app)
-  app.run(port=5000, debug=True)
+    from db import db
+    db.init_app(app)
+    app.run(port=5000, debug=True)

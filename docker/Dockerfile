@@ -30,12 +30,13 @@ COPY pg_hba.conf /etc/postgresql/9.5/main/pg_hba.conf
 #Jump to root user
 USER root
 
-# install firewall ubuntu and git andnginx
+# install firewall ubuntu and git and nginx
 RUN apt-get install -y ufw git nginx
 RUN apt-get install -y python3-pip python3-dev libpq-dev
 
-# set up firewall ubuntu
-#TODO: RUN ufw enable && ufw allow 'Nginx HTTP' && ufw allow ssh
+# delete default config
+RUN rm /etc/nginx/sites-enabled/default
+COPY uwsgi_myd2si_api_rest.service /etc/systemd/system/uwsgi_myd2si_api_rest.service
 
 # create nginx config
 COPY myd2si-api-rest.conf /etc/nginx/sites-available/myd2si-api-rest.conf
@@ -58,6 +59,9 @@ RUN ["/bin/bash",  "-c", \
     virtualenv venv --python=python3.5 && \
     source venv/bin/activate && pip install -r requirements.txt"]
 
-
-# start nginx
-#RUN service nginx restart
+USER root
+# start nginx , set up firewall ubuntu
+#TODO: ufw enable && ufw allow 'Nginx HTTP' && ufw allow ssh
+# RUN service nginx restart
+# RUN service uwsgi_myd2si_api_rest restart
+# RUN service postgresql restart

@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI MyD2si api rest
+
+[Service]
+Environment=DATABASE_URL=postgres://myd2si:myd2si@localhost:5432/myd2si
+ExecStart=/var/www/html/myd2si-api-rest/venv/bin/uwsgi --master --emperor /var/www/html/myd2si-api-rest/uwsgi.ini --die-on-term --uid myd2si --gid myd2si --logto /var/www/html/myd2si-api-rest/log/emperor.log
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target

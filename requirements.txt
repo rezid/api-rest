@@ -6,4 +6,3 @@ uwsgi
 psycopg2
 yapf
 pylint
-pip8

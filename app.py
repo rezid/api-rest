@@ -1,39 +1,35 @@
-import os
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Api
 from flask_jwt import JWT
-from datetime import timedelta
+
+from authlib.flask.client import OAuth
+from loginpass import create_flask_blueprint
+from loginpass import Google
 
 from security import authenticate, identity
-from resources.user import UserRegister
-from resources.book import Book, BookList
-from resources.store import Store, StoreList
+from resources.user import handle_authorize
+from resources.book import Book, BookList, BookCopie, BookCopieList, BorrowList, ReturnList, Tag, TagList
 
 app = Flask(__name__)
-app.secret_key = 'zidane'
+app.config.from_pyfile('config.py')
+oauth = OAuth(app)
 api = Api(app)
-
-# When debug = Flase in the flask application, and We make a call to a jwt
-# protected endpoint without an access token the process will terminate with
-# 500 Internal Server Error without this config
-app.config['PROPAGATE_EXCEPTIONS'] = True
-# change the default url to the authentication endpoint
-app.config['JWT_AUTH_URL_RULE'] = '/login'
-# config JWT to expire within half an hour
-app.config['JWT_EXPIRATION_DELTA'] = timedelta(seconds=1800)
-# desactivate FLASK SQLALCHEMY track modification
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# select the db used
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL',
-                                                       'sqlite:///data.db')
-
 jwt = JWT(app, authenticate, identity)
 
-api.add_resource(Store, '/store/<string:name>')
-api.add_resource(Book, '/book/<string:isbn>')
 api.add_resource(BookList, '/books')
-api.add_resource(UserRegister, '/register')
-api.add_resource(StoreList, '/stores')
+api.add_resource(Book, '/books/<string:isbn>')
+api.add_resource(TagList, '/books/<string:isbn>/tags')
+api.add_resource(Tag, '/books/<string:isbn>/tags/<string:name>')
+api.add_resource(BookCopieList, '/books/<string:isbn>/copies')
+api.add_resource(BookCopie, '/copies/<int:id>')
+api.add_resource(BorrowList, '/copies/<int:id>/borrows')
+api.add_resource(ReturnList, '/copies/<int:id>/returns')
+
+# TODO: custom create_flask_blueprint with try catch
+# visit:    /google/login
+# callback: /google/auth
+google_bp = create_flask_blueprint(Google, oauth, handle_authorize)
+app.register_blueprint(google_bp, url_prefix='/google')
 
 if __name__ == '__main__':
     from db import db

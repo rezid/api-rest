@@ -6,3 +6,5 @@ uwsgi
 psycopg2
 yapf
 pylint
+authlib
+loginpass

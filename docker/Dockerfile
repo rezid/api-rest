@@ -22,7 +22,7 @@ COPY sudoers /etc/sudoers
 USER postgres
 
 # restart the service, add a new postgres role, create new db
-RUN ["/bin/bash", "-c", "service postgresql restart && echo -e 'myd2si\nmyd2si' | createuser myd2si && createdb myd2si"]
+RUN ["/bin/bash", "-c", "service postgresql restart && echo -e 'myd2si\nmyd2si' | createuser myd2si -P && createdb myd2si"]
 
 # force password for database access
 COPY pg_hba.conf /etc/postgresql/9.5/main/pg_hba.conf
